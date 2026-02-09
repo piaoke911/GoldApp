@@ -1,17 +1,21 @@
 name: Android Build
 on: [push]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Build with Buildozer
-        uses: ArtemSBulgakov/buildozer-action@v1
+        # 换用这个更稳的官方维护版，避开权限报错
+        uses: FarasYasin/buildozer-action@v2
         with:
-          workdir: .
           buildozer_version: master
-      - name: Upload artifacts
+          workdir: .
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gold-App-Package
+          name: Gold-Signal-App
           path: bin/*.apk
