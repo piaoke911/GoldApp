@@ -7,8 +7,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Get Date
+        id: get-date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
       - name: Build with Buildozer
-        # 换用这个更稳的官方维护版，避开权限报错
+        # 换成这个目前维护最勤、修复了权限 Bug 的版本
         uses: FarasYasin/buildozer-action@v2
         with:
           buildozer_version: master
@@ -17,5 +21,5 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Gold-Signal-App
+          name: GoldApp-${{ steps.get-date.outputs.date }}
           path: bin/*.apk
