@@ -5,12 +5,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: 🚀 首席执行：获取源代码
+      - name: 🚀 首席执行：拉取全球量化代码
         uses: actions/checkout@v4
 
-      - name: 🧠 核心架构：Buildozer 引擎启动
-        # 换用这个已经内部修复了 user 权限 Bug 的稳定版本
-        uses: FarasYasin/buildozer-action@v2
+      - name: 🧠 核心架构：原装 Buildozer 环境启动
+        # 使用 Kivy 官方提供的最原始、最底层的镜像，没有任何权限 Bug
+        uses: ArtemSBulgakov/buildozer-action@v1.6.1
         with:
           buildozer_version: master
           workdir: .
@@ -18,5 +18,5 @@ jobs:
       - name: 📦 成果输出：提取 APK 安装包
         uses: actions/upload-artifact@v4
         with:
-          name: Gold-Signal-App-Final
+          name: Gold-Signal-Final-App
           path: bin/*.apk
