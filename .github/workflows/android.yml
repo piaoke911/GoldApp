@@ -1,22 +1,22 @@
-name: Android Build
+name: Gold-Quantum-App-Factory
 on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: 🚀 首席执行：获取源代码
         uses: actions/checkout@v4
 
-      - name: Build APK with Buildozer
-        # 直接使用 Kivy 官方推荐的底层工具，不加任何花哨配置
-        uses: ArtemSBulgakov/buildozer-action@v1
+      - name: 🧠 核心架构：Buildozer 引擎启动
+        # 换用这个已经内部修复了 user 权限 Bug 的稳定版本
+        uses: FarasYasin/buildozer-action@v2
         with:
           buildozer_version: master
           workdir: .
 
-      - name: Upload Finished APK
+      - name: 📦 成果输出：提取 APK 安装包
         uses: actions/upload-artifact@v4
         with:
-          name: GoldApp-Build
+          name: Gold-Signal-App-Final
           path: bin/*.apk
