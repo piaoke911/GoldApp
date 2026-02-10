@@ -1,22 +1,22 @@
-name: Global-Quant-Master-Build
+name: Gold-Signal-Flash-Build
 on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: 🚀 1. 首席执行：同步源代码
+      - name: 🚀 1. 源码同步
         uses: actions/checkout@v4
 
-      - name: 🏗️ 2. 环境构建：使用 Kivy 官方封装镜像
-        # 这个 Action 是 Kivy 官方最稳的，它内部自带了所有权限修复
-        uses: ArtemSBulgakov/buildozer-action@v1.6.1
+      - name: 🏗️ 2. 环境注入 (极速版)
+        # 换用这个内置了 Android SDK 协议自建的 Action
+        uses: FarasYaasin/buildozer-action@v2
         with:
           buildozer_version: master
           workdir: .
 
-      - name: 📦 3. 成果提取：交付全球量化终端
+      - name: 📦 3. 成果提取
         uses: actions/upload-artifact@v4
         with:
-          name: GoldApp-Master-Final
+          name: GoldApp-Build
           path: bin/*.apk
