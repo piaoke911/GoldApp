@@ -5,17 +5,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: 🚀 首席执行：同步源码
+      - name: 🚀 1. 源码同步
         uses: actions/checkout@v4
 
-      - name: 🧠 核心架构：Buildozer 原生构建
-        # 使用目前最稳、修复了所有权限 Bug 的版本
-        uses: FarasYaasin/buildozer-action@v2
-        with:
-          buildozer_version: master
-          workdir: .
+      - name: 🏗️ 2. 环境强制初始化
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip
+          pip3 install --user --upgrade buildozer
 
-      - name: 📦 成果输出：提取安装包
+      - name: 🧠 3. 强制权限解锁并构建
+        # 这里直接调用系统底层命令，绕过所有插件的权限 Bug
+        run: |
+          buildozer android debug
+        env:
+          # 这一行是灵魂：强制同意所有协议，不让系统卡住
+          APP_ANDROID_ACCEPT_SDK_LICENSE: "1"
+
+      - name: 📦 4. 成果提取
         uses: actions/upload-artifact@v4
         with:
           name: GoldApp-Final
