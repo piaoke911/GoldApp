@@ -1,27 +1,22 @@
-name: Gold-Quantum-Final-Build
+name: Global-Quant-Master-Build
 on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: 🚀 1. 源码同步
+      - name: 🚀 1. 首席执行：同步源代码
         uses: actions/checkout@v4
 
-      - name: 🏗️ 2. 环境初始化
-        run: |
-          sudo apt update
-          sudo apt install -y python3-pip python3-setuptools
-          pip3 install --user --upgrade buildozer
+      - name: 🏗️ 2. 环境构建：使用 Kivy 官方封装镜像
+        # 这个 Action 是 Kivy 官方最稳的，它内部自带了所有权限修复
+        uses: ArtemSBulgakov/buildozer-action@v1.6.1
+        with:
+          buildozer_version: master
+          workdir: .
 
-      - name: 🧠 3. 强制权限解锁并构建
-        run: |
-          buildozer android debug
-        env:
-          APP_ANDROID_ACCEPT_SDK_LICENSE: "1"
-
-      - name: 📦 4. 成果提取
+      - name: 📦 3. 成果提取：交付全球量化终端
         uses: actions/upload-artifact@v4
         with:
-          name: GoldApp-Final
+          name: GoldApp-Master-Final
           path: bin/*.apk
