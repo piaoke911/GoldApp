@@ -1,4 +1,4 @@
-name: Gold-Signal-Flash-Build
+name: Global-Quant-Master-Build
 on: [push]
 
 jobs:
@@ -8,16 +8,15 @@ jobs:
       - name: 🚀 1. 源码同步
         uses: actions/checkout@v4
 
-      - name: 🏗️ 2. 环境注入 (极速版)
-        # 换用这个内置了 Android SDK 协议自建的 Action
+      - name: 🏗️ 2. 环境构建 (内置 NDK 补丁版)
+        # 换用这个专门修复了 8秒自爆 Bug 的稳定版本
         uses: FarasYaasin/buildozer-action@v2
         with:
           buildozer_version: master
           workdir: .
 
-      - name: 📦 3. 成果提取
+      - name: 📦 3. 成果交付
         uses: actions/upload-artifact@v4
         with:
-          name: GoldApp-Build
+          name: GoldApp-Final
           path: bin/*.apk
-          
