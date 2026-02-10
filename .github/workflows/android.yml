@@ -8,18 +8,16 @@ jobs:
       - name: 🚀 1. 源码同步
         uses: actions/checkout@v4
 
-      - name: 🏗️ 2. 环境强制初始化
+      - name: 🏗️ 2. 环境初始化
         run: |
           sudo apt update
-          sudo apt install -y python3-pip
+          sudo apt install -y python3-pip python3-setuptools
           pip3 install --user --upgrade buildozer
 
       - name: 🧠 3. 强制权限解锁并构建
-        # 这里直接调用系统底层命令，绕过所有插件的权限 Bug
         run: |
           buildozer android debug
         env:
-          # 这一行是灵魂：强制同意所有协议，不让系统卡住
           APP_ANDROID_ACCEPT_SDK_LICENSE: "1"
 
       - name: 📦 4. 成果提取
