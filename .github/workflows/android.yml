@@ -1,22 +1,20 @@
-name: Global-Quant-Master-Build
-on: [push]
+[app]
+title = 黄金指挥部
+package.name = goldquant
+package.domain = org.boss
+source.dir = .
+source.include_exts = py,png,jpg,kv,atlas
+version = 0.1
+# 增加了权限和兼容性设置
+requirements = python3,kivy,pandas,numpy,requests
+orientation = portrait
+fullscreen = 0
+android.permissions = INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE
+android.api = 31
+android.minapi = 21
+android.ndk = 25b
+android.archs = arm64-v8a
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 🚀 1. 源码同步
-        uses: actions/checkout@v4
-
-      - name: 🏗️ 2. 环境构建 (内置 NDK 补丁版)
-        # 换用这个专门修复了 8秒自爆 Bug 的稳定版本
-        uses: FarasYaasin/buildozer-action@v2
-        with:
-          buildozer_version: master
-          workdir: .
-
-      - name: 📦 3. 成果交付
-        uses: actions/upload-artifact@v4
-        with:
-          name: GoldApp-Final
-          path: bin/*.apk
+# 核心：自动同意协议，防止再次卡死
+android.accept_sdk_license = True
+p4a.branch = master
