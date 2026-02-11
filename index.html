@@ -2,45 +2,48 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>黄金量化 - 最终隧道版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>黄金量化雷达-最终窗口版</title>
     <style>
-        body { background: #000; color: #FFD700; font-family: -apple-system, sans-serif; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100vh; margin: 0; }
-        #price { font-size: 55px; font-weight: bold; margin: 15px 0; }
-        #signal { font-size: 18px; color: #fff; background: #333; display: inline-block; padding: 12px 25px; border-radius: 50px; }
-        .info { color: #444; margin-top: 40px; font-size: 11px; }
+        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .header { padding: 15px; text-align: center; background: #1a1a1a; border-bottom: 1px solid #333; }
+        #gold-widget { flex: 1; width: 100%; }
+        .footer { padding: 10px; font-size: 12px; color: #666; text-align: center; }
     </style>
 </head>
 <body>
-    <div style="color: #888; letter-spacing: 2px;">GOLD QUANT V9.0</div>
-    <div id="price">正在穿透...</div>
-    <div id="signal">隧道连接中</div>
-    <div class="info">GitHub 官方节点加密传输</div>
+    <div class="header">
+        <span style="color: #FFD700; font-weight: bold; font-size: 18px;">GOLD ALPHA V10.0</span>
+    </div>
 
-    <script>
-        async function getGold() {
-            // 这个接口是直接抓取华尔街黄金现货的公共数据，不经过币安等交易所，非常稳
-            const url = 'https://api.exchangerate-api.com/v4/latest/XAU';
-            
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                // 计算 1 盎司黄金兑美元的价格
-                const p = 1 / data.rates.USD; 
-
-                document.getElementById('price').innerText = `$${p.toFixed(2)}`;
-                document.getElementById('signal').innerText = "😴 观望待机";
-                document.getElementById('signal').style.background = "#222";
-                
-            } catch (e) {
-                // 如果还是不行，最后的兜底逻辑
-                document.getElementById('price').innerText = "链路堵塞";
-            }
-        }
-
-        setInterval(getGold, 10000);
-        getGold();
-    </script>
+    <div id="gold-widget">
+        <div class="tradingview-widget-container" style="height:100%;width:100%">
+            <div id="tradingview_gold"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+            <script type="text/javascript">
+            new TradingView.MediumWidget({
+              "symbols": [["Gold", "OANDA:XAUUSD|1D"]],
+              "chartOnly": false,
+              "width": "100%",
+              "height": "100%",
+              "locale": "zh_CN",
+              "colorTheme": "dark",
+              "gridLineColor": "rgba(42, 46, 57, 0)",
+              "fontColor": "#787b86",
+              "isTransparent": false,
+              "autosize": true,
+              "showFloatingTooltip": true,
+              "showVolume": false,
+              "scalePosition": "no",
+              "scaleMode": "Normal",
+              "fontFamily": "Trebuchet MS, sans-serif",
+              "noLogoOverlay": true
+            });
+            </script>
+        </div>
+    </div>
+    <div class="footer">
+        ● 卫星链路已直连 | 实时 K 线决策模式
+    </div>
 </body>
 </html>
