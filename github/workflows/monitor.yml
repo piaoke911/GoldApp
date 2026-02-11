@@ -1,27 +1,27 @@
-name: Gold Alpha Quant V6.0 Monitor
+name: Gold Alpha Quant V6.1 Monitor
 
 on:
   push:
-    branches: [ main ]  # 只要保存文件，立刻强制运行一次
-  workflow_dispatch:      # 激活手动运行按钮
+    branches: [ main ]  # 核心点：你只要一保存提交，它就必须强制运行！
+  workflow_dispatch:      # 核心点：手动开启那个蓝色的 Run 按钮
   schedule:
-    - cron: '*/30 * * * *' # 每30分钟自动运行
+    - cron: '*/30 * * * *'
 
 jobs:
-  build:
+  run-engine:
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 拉取最新代码
+      - name: 📥 拉取代码
         uses: actions/checkout@v3
 
-      - name: 🐍 配置 Python 环境
+      - name: 🐍 启动 Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - name: 📦 安装量化必备插件
+      - name: 📦 安装插件
         run: |
           pip install -r requirements.txt
 
-      - name: 🚀 执行黄金决策引擎
+      - name: 🚀 黄金雷达探测开始
         run: python main.py
