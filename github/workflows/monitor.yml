@@ -2,10 +2,10 @@ name: Gold Alpha Quant V6.0 Monitor
 
 on:
   push:
-    branches: [ main ] # 只要你一改代码，它就立刻跑一次（这是为了激活）
+    branches: [ main ]  # 只要保存文件，立刻强制运行一次
+  workflow_dispatch:      # 激活手动运行按钮
   schedule:
-    - cron: '*/30 * * * *'
-  workflow_dispatch: # 这是手动按钮的“开关”
+    - cron: '*/30 * * * *' # 每30分钟自动运行
 
 jobs:
   build:
