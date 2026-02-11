@@ -1,21 +1,26 @@
-name: Gold-Quantum-Final-Success
+name: Gold-Alpha-Final-Shield
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [ main ]  # 只要保存代码，立刻触发运行
+  workflow_dispatch:      # 激活手动运行按钮
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '*/30 * * * *' # 每30分钟自动侦测一次
 
 jobs:
-  run-quant:
+  run-quant-engine:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: 📥 拉取最新代码
+        uses: actions/checkout@v3
+
+      - name: 🐍 配置 Python 环境
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      - name: Install
+
+      - name: 📦 安装量化必备插件
         run: pip install -r requirements.txt
-      - name: Run
+
+      - name: 🚀 启动黄金决策引擎
         run: python main.py
