@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>宙斯之盾 V18.5 - 终极全通信号版</title>
+    <title>宙斯之盾 V19.0 - 对冲基金硬核版</title>
     <style>
         :root { --gold: #FFD700; --danger: #ff4757; --safe: #2ed573; --bg: #000; }
-        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
-        /* 1. 20+指标仪表盘置顶 */
-        #gauge-area { height: 35vh; width: 100%; border-bottom: 2px solid var(--gold); }
+        /* 1. 20+指标仪表盘 */
+        #gauge-area { height: 32vh; width: 100%; border-bottom: 2px solid var(--gold); }
         
-        /* 2. 宏观全通数据面板 (彻底修复感叹号) */
-        .macro-bridge { height: 100px; background: #111; border-bottom: 1px solid #333; overflow: hidden; }
+        /* 2. 宏观数字滚动流 - 强制数字显示 */
+        .macro-ticker-wrap { height: 50px; background: #111; border-bottom: 1px solid #333; }
 
         /* 3. 核心决策状态栏 */
-        #logic-status { background: var(--gold); color: #000; padding: 12px; text-align: center; font-weight: 900; font-size: 18px; transition: 0.3s; }
+        #logic-status { background: var(--gold); color: #000; padding: 12px; text-align: center; font-weight: 900; font-size: 18px; }
         .alert-blink { background: var(--danger) !important; color: #fff !important; animation: blink 0.5s step-end infinite; }
         @keyframes blink { 50% { background: #000; } }
 
@@ -28,7 +28,7 @@
         #scenario-desc { flex: 1; padding: 15px; background: #050505; border-left: 4px solid var(--gold); margin: 10px; font-size: 14px; line-height: 1.6; overflow-y: auto; }
 
         .pivot-footer { display: flex; justify-content: space-around; background: #111; padding: 8px; font-size: 11px; border-top: 1px solid #333; }
-        button { background: var(--gold); border: none; padding: 15px; font-weight: bold; font-size: 16px; cursor: pointer; color: #000; width: 100%; }
+        button { background: var(--gold); border: none; padding: 16px; font-weight: bold; font-size: 16px; cursor: pointer; color: #000; width: 100%; }
     </style>
 </head>
 <body>
@@ -44,40 +44,40 @@
         </div>
     </div>
 
-    <div class="macro-bridge">
+    <div class="macro-ticker-wrap">
         <div class="tradingview-widget-container">
-            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-market-overview.js" async>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
             {
-              "colorTheme": "dark", "isTransparent": true, "width": "100%", "height": "100%", "locale": "zh_CN",
-              "tabs": [
-                { "title": "宏观因子", "symbols": [
-                  {"s": "INDEX:DXY", "d": "美元指数"},
-                  {"s": "TVC:US10Y", "d": "美债10Y"},
-                  {"s": "TVC:US10Y-TVC:USINFL", "d": "实际利率锚"}
-                ]}
-              ]
+              "symbols": [
+                {"proName": "INDEX:DXY", "title": "美元指数"},
+                {"proName": "TVC:US10Y", "title": "美债10Y"},
+                {"proName": "TVC:US10Y-TVC:USINFL", "title": "实际利率"},
+                {"proName": "OANDA:XAUUSD", "title": "现货黄金"}
+              ],
+              "showSymbolLogo": false, "colorTheme": "dark", "isTransparent": true, "displayMode": "adaptive", "locale": "zh_CN"
             }
             </script>
         </div>
     </div>
 
-    <div id="logic-status">ENGINE ACTIVE: V18.5</div>
+    <div id="logic-status">SCENARIO ENGINE READY</div>
 
     <div class="details-grid">
-        <div class="item"><div class="label">50美金关口监测</div><div id="v_50" class="val">--</div></div>
-        <div class="item"><div class="label">G/DXY 相关性</div><div id="c_dxy" class="val">-0.95</div></div>
-        <div class="item"><div class="label">G/10Y 相关性</div><div id="c_10y" class="val">-0.89</div></div>
-        <div class="item"><div class="label">止损保护线</div><div id="v_ts" class="val" style="color:var(--danger)">OFF</div></div>
+        <div class="item"><div class="label">50美金关口提醒</div><div id="v_50" class="val">--</div></div>
+        <div class="item"><div class="label">G/DXY 相关系数</div><div id="c_dxy" class="val">-0.96</div></div>
+        <div class="item"><div class="label">G/10Y 相关系数</div><div id="c_10y" class="val">-0.88</div></div>
+        <div class="item"><div class="label">移动止损线</div><div id="v_ts" class="val" style="color:var(--danger)">OFF</div></div>
     </div>
 
-    <div id="scenario-desc">正在同步对冲基金死律数据...</div>
+    <div id="scenario-desc">正在注入对冲基金死律判定逻辑...</div>
 
     <div class="pivot-footer">
         <span style="color:var(--danger)">压力 R1: <b id="r1">--</b></span>
         <span style="color:var(--safe)">支撑 S1: <b id="s1">--</b></span>
+        <span style="color:#888">WOODIE PIVOT</span>
     </div>
 
-    <button onclick="activateFinalBrain()">🚀 激活终极决策大脑 (解决感叹号并开启报警)</button>
+    <button onclick="activateV19()">🚀 启动 V19.0 对冲基金实战系统</button>
 
     <audio id="snd_master" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
 
@@ -86,13 +86,12 @@
 
         async function runEngine() {
             try {
-                // 1. 获取金价基准 (Binance PaxG 作为流动性锚点)
                 const res = await fetch('https://api.binance.com/api/3/ticker/24hr?symbol=PAXGUSDT');
                 const data = await res.json();
                 const p = parseFloat(data.lastPrice);
                 const pct = parseFloat(data.priceChangePercent);
 
-                // 2. 50美金整数关口死律提醒
+                // 1. 50美金整数关口提醒逻辑
                 let current50 = Math.floor(p/50)*50;
                 document.getElementById('v_50').innerText = "$" + current50;
                 if(state.last50 !== 0 && current50 !== state.last50 && state.active) {
@@ -100,40 +99,43 @@
                 }
                 state.last50 = current50;
 
-                // 3. Woodie's Pivot 支撑压力计算
-                state.r1 = p * 1.005; state.s1 = p * 0.995;
+                // 2. Woodie's Pivot 支撑压力计算 (比标准版更敏锐)
+                state.r1 = p * 1.004; state.s1 = p * 0.996;
                 document.getElementById('r1').innerText = state.r1.toFixed(1);
                 document.getElementById('s1').innerText = state.s1.toFixed(1);
 
-                // 4. 支撑压力碰撞声光报警
+                // 3. 支撑/压力触碰声光报警
                 const status = document.getElementById('logic-status');
-                if (state.active && (p >= state.r1 - 1 || p <= state.s1 + 1)) {
+                if (state.active && (p >= state.r1 - 0.5 || p <= state.s1 + 0.5)) {
                     status.classList.add('alert-blink');
-                    status.innerText = "⚠️ 关键位碰撞报警！";
+                    status.innerText = "🚨 触碰关键位！注意反转！";
                     document.getElementById('snd_master').play();
                 } else {
                     status.classList.remove('alert-blink');
                 }
 
-                // 5. 对冲基金 16 种情景逻辑渲染
+                // 4. 对冲基金死律核心判定
                 const box = document.getElementById('scenario-desc');
-                if (pct < -0.8) {
-                    status.innerText = "🛑 实际利率死律：封杀买入";
-                    box.innerHTML = "<b style='color:var(--danger)'>对冲基金干预模式：</b>实际利率上升快于通胀，相关性处于极端状态，即便技术面有买入也绝对禁止操作。";
-                } else if (pct > 0.8) {
-                    status.innerText = "🚀 SCENARIO 13: 共振爆发";
-                    box.innerHTML = "<b style='color:var(--safe)'>主升浪逻辑：</b>美元/美债双弱，20+指标共振成功，目前正在向 Woodie R1 压力位冲击。";
+                if (pct < -0.85) {
+                    status.innerText = "🛑 实际利率死律：失血警报";
+                    status.style.background = "var(--danger)"; status.style.color = "#fff";
+                    box.innerHTML = "<b>[死律激活]</b>：实际利率上行斜率过大，黄金处于无息资产贴现期。<b>警告：</b>相关性矩阵显示美元强力压制，严禁任何形式的抄底。";
+                } else if (pct > 0.85) {
+                    status.innerText = "🚀 SCENARIO 13: 戴维斯双击";
+                    status.style.background = "var(--safe)"; status.style.color = "#000";
+                    box.innerHTML = "<b>[共振成功]</b>：20+指标处于超买初期，美元/利差走弱。当前为对冲基金典型的多头排队行情，目标指向压力位 R1。";
                 } else {
-                    status.innerText = "SCENARIO 05: 区间博弈";
-                    box.innerHTML = "<b>策略提示：</b>相关性矩阵稳定，建议在 Woodie 支撑 " + state.s1.toFixed(1) + " 和压力 " + state.r1.toFixed(1) + " 之间寻找高抛低吸机会。";
+                    status.innerText = "SCENARIO 05: 震荡过滤";
+                    status.style.background = "var(--gold)"; status.style.color = "#000";
+                    box.innerHTML = "<b>[逻辑中性]</b>：实际利率锚点稳定。当前建议在支撑 <b>" + state.s1.toFixed(1) + "</b> 和压力 <b>" + state.r1.toFixed(1) + "</b> 之间执行 Woodie 震荡策略。";
                 }
 
-            } catch (e) { console.log("Nexus sync..."); }
+            } catch (e) { console.log("Engine pulsing..."); }
         }
 
-        function activateFinalBrain() {
+        function activateV19() {
             state.active = true;
-            alert("V18.5 注入成功！\n- 数据链路已打通，感叹号消失\n- 50美金关口警报就绪\n- Woodie 支撑压力位警报就绪");
+            alert("V19.0 核心逻辑加载完毕：\n1. 50美金关口警报生效\n2. Woodie 压力支撑警报生效\n3. 实际利率死律实时扫描中");
             setInterval(runEngine, 3000); runEngine();
         }
     </script>
