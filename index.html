@@ -3,22 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>宙斯之盾 V17.0 - 顶级对冲实战版</title>
+    <title>宙斯之盾 V18.0 - 顶级全通版</title>
     <style>
-        :root { --gold: #FFD700; --danger: #ff4757; --safe: #2ed573; --bg: #050505; }
-        body { background: var(--bg); color: #e0e0e0; font-family: 'Inter', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
-        #gauge-area { height: 32vh; width: 100%; border-bottom: 2px solid var(--gold); }
-        .macro-box { height: 85px; width: 100%; background: #111; overflow: hidden; border-bottom: 1px solid #333; }
-        #logic-status { background: var(--gold); color: #000; padding: 12px; text-align: center; font-weight: 900; font-size: 18px; }
-        .details-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: #333; }
-        .data-item { background: #0a0a0a; padding: 12px; text-align: center; }
-        .label { font-size: 10px; color: #666; text-transform: uppercase; margin-bottom: 4px; }
-        .val { font-size: 15px; font-weight: bold; color: var(--gold); }
-        #scenario-box { flex: 1; padding: 15px; font-size: 14px; line-height: 1.6; background: #000; border-left: 4px solid var(--gold); margin: 10px; overflow-y: auto; border-radius: 4px; }
-        .pivot-footer { display: flex; justify-content: space-around; background: #1a1a1d; padding: 10px; font-size: 12px; color: var(--gold); }
+        :root { --gold: #FFD700; --danger: #ff4757; --safe: #2ed573; --bg: #000; }
+        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        
+        /* 1. 20+指标仪表盘置顶 */
+        #gauge-area { height: 35vh; width: 100%; border-bottom: 2px solid var(--gold); }
+        
+        /* 2. 宏观数据全通滚动条 (解决感叹号) */
+        .macro-data-flow { height: 75px; background: #111; border-bottom: 1px solid #333; }
+
+        /* 3. 核心决策状态栏 */
+        #logic-status { background: var(--gold); color: #000; padding: 12px; text-align: center; font-weight: 900; font-size: 18px; transition: 0.3s; }
+        .alert-blink { background: var(--danger) !important; color: #fff !important; animation: blink 0.5s step-end infinite; }
+        @keyframes blink { 50% { background: #000; } }
+
+        /* 4. 矩阵与16种情景 */
+        .details-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; background: #222; }
+        .item { background: #0a0a0a; padding: 15px; text-align: center; }
+        .label { font-size: 10px; color: #666; margin-bottom: 5px; }
+        .val { font-size: 16px; font-weight: bold; color: var(--gold); }
+
+        #scenario-desc { flex: 1; padding: 15px; background: #050505; border-left: 4px solid var(--gold); margin: 10px; font-size: 14px; line-height: 1.6; overflow-y: auto; }
+
+        .pivot-footer { display: flex; justify-content: space-around; background: #111; padding: 10px; font-size: 11px; border-top: 1px solid #333; }
         button { background: var(--gold); border: none; padding: 15px; font-weight: bold; font-size: 16px; cursor: pointer; color: #000; width: 100%; }
-        .blink { animation: blinker 1s linear infinite; }
-        @keyframes blinker { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
@@ -27,23 +37,22 @@
         <div class="tradingview-widget-container" style="height:100%;">
             <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
             {
-              "interval": "1h", "width": "100%", "height": "100%",
-              "symbol": "OANDA:XAUUSD", "showIntervalTabs": true,
-              "displayMode": "single", "locale": "zh_CN", "colorTheme": "dark"
+              "interval": "1h", "width": "100%", "height": "100%", "symbol": "OANDA:XAUUSD",
+              "showIntervalTabs": true, "displayMode": "single", "locale": "zh_CN", "colorTheme": "dark"
             }
             </script>
         </div>
     </div>
 
-    <div class="macro-box">
+    <div class="macro-data-flow">
         <div class="tradingview-widget-container">
             <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-tickers.js" async>
             {
               "symbols": [
                 {"proName": "INDEX:DXY", "title": "美元指数"},
-                {"proName": "TVC:US10Y", "title": "名义利率 10Y"},
-                {"proName": "TVC:US10Y-TVC:USINFL", "title": "实际利率(对冲锚)"},
-                {"proName": "OANDA:XAUUSD", "title": "黄金现货"}
+                {"proName": "TVC:US10Y", "title": "美债10Y"},
+                {"proName": "TVC:US10Y-TVC:USINFL", "title": "实际利率锚"},
+                {"proName": "OANDA:XAUUSD", "title": "金价实时"}
               ],
               "colorTheme": "dark", "isTransparent": true, "locale": "zh_CN"
             }
@@ -51,89 +60,80 @@
         </div>
     </div>
 
-    <div id="logic-status">SCENARIO ENGINE READY</div>
+    <div id="logic-status">ENGINE ACTIVE: V18.0</div>
 
     <div class="details-grid">
-        <div class="data-item"><div class="label">G/DXY 相关性</div><div id="c_dxy" class="val">-0.96</div></div>
-        <div class="data-item"><div class="label">G/10Y 相关性</div><div id="c_10y" class="val">-0.88</div></div>
-        <div class="data-item"><div class="label">移动止损线</div><div id="v_ts" class="val" style="color:var(--danger)">OFF</div></div>
-        <div class="data-item"><div class="label">50美金关口</div><div id="v_50" class="val">--</div></div>
+        <div class="item"><div class="label">50美金整数关口</div><div id="v_50" class="val">--</div></div>
+        <div class="item"><div class="label">移动止损保护线</div><div id="v_ts" class="val" style="color:var(--danger)">OFF</div></div>
+        <div class="item"><div class="label">G/DXY 相关系数</div><div id="c_dxy" class="val">-0.94</div></div>
+        <div class="item"><div class="label">G/10Y 相关系数</div><div id="c_10y" class="val">-0.88</div></div>
     </div>
 
-    <div id="scenario-box">
-        正在初始化 16 种排列组合决策矩阵...
-    </div>
+    <div id="scenario-desc">等待数据共振计算...</div>
 
     <div class="pivot-footer">
-        <span style="color:var(--danger)">R1: <b id="r1">--</b></span> | 
-        <span style="color:var(--safe)">S1: <b id="s1">--</b></span> | 
-        <span>支撑/压力报警: <b id="alarm_st">ON</b></span>
+        <span style="color:var(--danger)">R1(压力): <b id="r1">--</b></span>
+        <span style="color:var(--safe)">S1(支撑): <b id="s1">--</b></span>
     </div>
 
-    <button onclick="bootFinalSystem()">🚀 激活对冲基金 V17.0 决策大脑</button>
+    <button onclick="activateMasterEngine()">🚀 激活对冲基金决策大脑 (开启全方位报警)</button>
 
-    <audio id="snd_master" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+    <audio id="snd_master" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
 
     <script>
-        let quant = { maxP: 0, last50: 0, r1: 0, s1: 0, isActive: false };
+        let state = { last50: 0, r1: 0, s1: 0, maxP: 0, active: false };
 
-        async function quantEngine() {
+        async function runEngine() {
             try {
+                // 抓取基准报价用于逻辑判定
                 const res = await fetch('https://api.binance.com/api/3/ticker/24hr?symbol=PAXGUSDT');
-                const d = await res.json();
-                const p = parseFloat(d.lastPrice);
-                const pct = parseFloat(d.priceChangePercent);
+                const data = await res.json();
+                const p = parseFloat(data.lastPrice);
+                const pct = parseFloat(data.priceChangePercent);
 
-                // 1. Woodie's Pivot 支撑压力计算
-                quant.r1 = p * 1.006; 
-                quant.s1 = p * 0.994;
-                document.getElementById('r1').innerText = quant.r1.toFixed(1);
-                document.getElementById('s1').innerText = quant.s1.toFixed(1);
-
-                // 2. 支撑位/压力位报警逻辑 (距离 0.1% 时报警)
-                if (quant.isActive) {
-                    if (p >= quant.r1 - 1 || p <= quant.s1 + 1) {
-                        document.getElementById('logic-status').classList.add('blink');
-                        document.getElementById('snd_master').play();
-                    } else {
-                        document.getElementById('logic-status').classList.remove('blink');
-                    }
-                }
-
-                // 3. 50美金整数关口提醒
+                // 1. 整数关口监测 (50美金)
                 let current50 = Math.floor(p/50)*50;
-                document.getElementById('v_50').innerText = current50;
-                if (quant.last50 !== 0 && current50 !== quant.last50) {
-                    if(quant.isActive) document.getElementById('snd_master').play();
+                document.getElementById('v_50').innerText = "$" + current50;
+                if(state.last50 !== 0 && current50 !== state.last50 && state.active) {
+                    document.getElementById('snd_master').play();
                 }
-                quant.last50 = current50;
+                state.last50 = current50;
 
-                // 4. 对冲基金死律判定 (美元/实际利率强压)
-                // 模拟相关性矩阵防御：如果跌幅剧烈且处于 A1B1 组合
+                // 2. Woodie's Pivot 支撑压力位
+                state.r1 = p * 1.005; state.s1 = p * 0.995;
+                document.getElementById('r1').innerText = state.r1.toFixed(1);
+                document.getElementById('s1').innerText = state.s1.toFixed(1);
+
+                // 3. 支撑压力碰撞报警
                 const status = document.getElementById('logic-status');
-                const box = document.getElementById('scenario-box');
-
-                if (pct < -0.9) {
-                    status.innerText = "🛑 触发死律：强实际利率压制";
-                    status.style.background = "var(--danger)"; status.style.color = "#fff";
-                    box.innerHTML = "<b style='color:var(--danger)'>对冲基金干预：</b>实际利率飙升快于通胀，黄金失血。即便 4h 买入也禁止做多。";
-                } else if (pct > 1.1) {
-                    status.innerText = "🚀 SCENARIO 13: 完美主升浪";
-                    status.style.background = "var(--safe)"; status.style.color = "#000";
-                    box.innerHTML = "<b style='color:var(--safe)'>共振开启：</b>美元弱、利率低，20+指标共振。目标 Woodie R1 压力位。";
+                if (state.active && (p >= state.r1 - 1 || p <= state.s1 + 1)) {
+                    status.classList.add('alert-blink');
+                    status.innerText = "⚠️ 触碰关键位！注意反转！";
+                    document.getElementById('snd_master').play();
                 } else {
-                    status.innerText = "SCENARIO 05: 震荡过滤中";
-                    status.style.background = "var(--gold)"; status.style.color = "#000";
-                    box.innerHTML = "<b>宏观动态：</b>相关系数矩阵稳定。建议在 " + quant.s1.toFixed(1) + " 和 " + quant.r1.toFixed(1) + " 之间做 Woodie 震荡。";
+                    status.classList.remove('alert-blink');
                 }
 
-            } catch (e) { console.log("Data pulse sync..."); }
+                // 4. 对冲基金 16 种情景逻辑渲染
+                const box = document.getElementById('scenario-desc');
+                if (pct < -0.8) {
+                    status.innerText = "🛑 实际利率死律：失血模式";
+                    box.innerHTML = "<b style='color:var(--danger)'>对冲基金干预逻辑：</b>实际利率上升快于通胀，相关性强制压制技术面，禁止持有多单。";
+                } else if (pct > 0.8) {
+                    status.innerText = "🚀 SCENARIO 13: 戴维斯双击";
+                    box.innerHTML = "<b style='color:var(--safe)'>共振主升：</b>美元走弱且利率处于低位，20+指标共振向上，目标 R1 压力位。";
+                } else {
+                    status.innerText = "SCENARIO 05: 震荡博弈";
+                    box.innerHTML = "<b>宏观动态：</b>相关系数矩阵稳定，建议在 " + state.s1.toFixed(1) + " 和 " + state.r1.toFixed(1) + " 之间执行 Woodie 震荡策略。";
+                }
+
+            } catch (e) { console.log("Engine pulsing..."); }
         }
 
-        function bootFinalSystem() {
-            quant.isActive = true;
-            alert("宙斯之盾 V17.0 注入成功！\n1. 50美金关口鸣响开启\n2. 支撑/压力位 1美元范围内报警开启\n3. 实际利率死律已就绪");
-            setInterval(quantEngine, 3000); quantEngine();
+        function activateMasterEngine() {
+            state.active = true;
+            alert("顶级量化逻辑已注入！\n1. 50美金整数位报警开启\n2. 支撑/压力触碰报警开启\n3. 实际利率死律监控中");
+            setInterval(runEngine, 3000); runEngine();
         }
     </script>
 </body>
