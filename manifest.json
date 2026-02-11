@@ -1,0 +1,16 @@
+{
+  "name": "黄金指挥部量化终端",
+  "short_name": "黄金量化",
+  "description": "全球顶级黄金量化交易决策系统",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#FFD700",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2502/2502127.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
