@@ -1,29 +1,65 @@
-name: Global-Quant-Master-Build
-on: [push]
+name: Global-Top-Quant-Build
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:  # 允许你手动点击按钮触发
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: 🚀 1. 源码同步
+      - name: 🚀 1. 首席执行：同步源码
         uses: actions/checkout@v4
 
-      - name: 🏗️ 2. 环境强制初始化 (Master Edition)
+      - name: 🧹 2. 空间清理 (防止爆盘)
         run: |
-          sudo apt update
-          sudo apt install -y python3-pip python3-setuptools libffi-dev libssl-dev
-          pip3 install --user --upgrade buildozer
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
 
-      - name: 🧠 3. 核心编译 (跳过所有权限 Bug)
-        # 直接调用系统底层，强制避开 chown 错误
+      - name: 🏗️ 3. 环境地基 (全手动依赖安装)
+        # 这里安装了所有编译安卓底层需要的库，避开一切环境缺失错误
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            libssl-dev \
+            libffi-dev \
+            python3-dev \
+            python3-pip \
+            python3-setuptools \
+            git \
+            zip \
+            unzip \
+            openjdk-17-jdk \
+            autoconf \
+            libtool \
+            pkg-config \
+            zlib1g-dev \
+            libncurses5-dev \
+            libncursesw5-dev \
+            libtinfo5 \
+            cmake \
+            libltdl-dev
+
+      - name: 🛠️ 4. 核心工具装载
+        # 安装最新版 Buildozer 和 Cython
+        run: |
+          pip3 install --upgrade pip
+          pip3 install --user --upgrade buildozer Cython==0.29.36 virtualenv
+
+      - name: 🧠 5. 启动全球量化编译 (Debug版)
+        # 关键参数：yes | ... 自动同意所有协议，防止卡死
         run: |
           export PATH=$PATH:~/.local/bin
-          buildozer android debug
+          yes | buildozer android debug
         env:
           APP_ANDROID_ACCEPT_SDK_LICENSE: "1"
+          BUILDOZER_USE_SUDO: "0"
 
-      - name: 📦 4. 成果交付
+      - name: 📦 6. 成果提取
         uses: actions/upload-artifact@v4
         with:
-          name: GoldApp-Final
+          name: Gold-Quant-Final-APK
           path: bin/*.apk
