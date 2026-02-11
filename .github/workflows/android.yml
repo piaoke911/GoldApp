@@ -1,16 +1,14 @@
-name: Global-Quant-Master-Final-Build
+name: Gold-Quantum-Final-Success
 on: [push, workflow_dispatch]
 
 jobs:
   build:
-    # 强制使用 22.04，这是目前最稳的安卓编译环境
     runs-on: ubuntu-22.04
-    
     steps:
       - name: 🚀 1. 源码同步
         uses: actions/checkout@v4
 
-      - name: 🏗️ 2. 深度清理与地基搭建
+      - name: 🏗️ 2. 环境强制初始化 (全能工具包)
         run: |
           sudo apt update
           sudo apt install -y \
@@ -18,28 +16,24 @@ jobs:
             openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev \
             libncurses5-dev libncursesw5-dev libtinfo5 cmake libltdl-dev \
             libffi-dev libssl-dev
-
-      - name: 🛠️ 3. 核心工具链注入
-        run: |
-          pip3 install --upgrade pip
-          # 锁死 Cython 版本，这是 Kivy 编译成功的关键
+          
+          # 强制安装固定版本的编译工具
           pip3 install --user --upgrade buildozer Cython==0.29.36 virtualenv
-          # 确保系统能找到 buildozer
+          # 把运行路径加入系统环境
           echo "/home/runner/.local/bin" >> $GITHUB_PATH
 
-      - name: 🧠 4. 开启全自动化编译
+      - name: 🧠 3. 强制权限解锁 & 启动编译
+        # 这里是灵魂：yes | ... 会自动帮你在后台“点同意”所有安卓协议
         run: |
-          # 自动接受所有安卓协议，防止后台死等
+          export PATH=$PATH:~/.local/bin
           yes | buildozer android debug
         env:
           APP_ANDROID_ACCEPT_SDK_LICENSE: "1"
           BUILDOZER_USE_SUDO: "0"
 
-      - name: 📦 5. 最终 APK 成果提取
+      - name: 📦 4. 成果提取
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: Gold-Quant-Alpha-App
-          path: |
-            bin/*.apk
-            .buildozer/android/platform/build-arm64-v8a/dists/goldquant/*.log
+          name: GoldApp-Final-APK
+          path: bin/*.apk
