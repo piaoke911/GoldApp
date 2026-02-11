@@ -1,58 +1,45 @@
-name: Gold-Quant-Legacy-Build
-on: [push]
+name: Global-Quant-Master-Final-Build
+on: [push, workflow_dispatch]
 
 jobs:
   build:
-    # 核心修改：强制使用 22.04 老版本，绕过所有 PIP 权限锁
+    # 强制使用 22.04，这是目前最稳的安卓编译环境
     runs-on: ubuntu-22.04
     
     steps:
       - name: 🚀 1. 源码同步
         uses: actions/checkout@v4
 
-      - name: 🏗️ 2. 环境清理与构建 (老兵模式)
+      - name: 🏗️ 2. 深度清理与地基搭建
         run: |
-          # 释放磁盘空间
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /opt/ghc
-          
-          # 安装基础依赖
           sudo apt update
           sudo apt install -y \
-            python3-pip \
-            python3-setuptools \
-            git \
-            zip \
-            unzip \
-            openjdk-17-jdk \
-            autoconf \
-            libtool \
-            libffi-dev \
-            libssl-dev \
-            virtualenv
+            python3-pip python3-setuptools git zip unzip \
+            openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev \
+            libncurses5-dev libncursesw5-dev libtinfo5 cmake libltdl-dev \
+            libffi-dev libssl-dev
 
-      - name: 🛠️ 3. 安装 Buildozer (无视警告版)
+      - name: 🛠️ 3. 核心工具链注入
         run: |
           pip3 install --upgrade pip
-          # 这里指定 Cython 旧版本，防止新版本不兼容
-          pip3 install --user --upgrade buildozer Cython==0.29.36
+          # 锁死 Cython 版本，这是 Kivy 编译成功的关键
+          pip3 install --user --upgrade buildozer Cython==0.29.36 virtualenv
+          # 确保系统能找到 buildozer
+          echo "/home/runner/.local/bin" >> $GITHUB_PATH
 
-      - name: 🧠 4. 启动黄金编译
+      - name: 🧠 4. 开启全自动化编译
         run: |
-          # 注入环境变量
-          export PATH=$PATH:~/.local/bin
-          
-          # 强制同意协议并开始编译
+          # 自动接受所有安卓协议，防止后台死等
           yes | buildozer android debug
         env:
           APP_ANDROID_ACCEPT_SDK_LICENSE: "1"
           BUILDOZER_USE_SUDO: "0"
 
-      - name: 📦 5. 成果提取
-        if: always() # 无论成功失败都尝试提取日志
+      - name: 📦 5. 最终 APK 成果提取
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: GoldApp-Result
+          name: Gold-Quant-Alpha-App
           path: |
             bin/*.apk
             .buildozer/android/platform/build-arm64-v8a/dists/goldquant/*.log
