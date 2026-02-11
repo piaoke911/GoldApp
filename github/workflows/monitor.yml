@@ -1,10 +1,11 @@
 name: Gold Alpha Quant V6.0 Monitor
 
 on:
+  push:
+    branches: [ main ] # 只要你一改代码，它就立刻跑一次（这是为了激活）
   schedule:
-    # 这里设置每 30 分钟运行一次 (UTC时间)
     - cron: '*/30 * * * *'
-  workflow_dispatch: # 这个按钮允许你手动随时点火运行
+  workflow_dispatch: # 这是手动按钮的“开关”
 
 jobs:
   build:
@@ -23,4 +24,4 @@ jobs:
           pip install -r requirements.txt
 
       - name: 🚀 执行黄金决策引擎
-        run: python main.py 
+        run: python main.py
