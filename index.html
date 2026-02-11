@@ -2,68 +2,52 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>黄金决策终端 V7.6</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>极速黄金终端</title>
     <style>
-        :root { --gold: #FFD700; --bg: #0d0d0d; --card: #1a1a1a; --up: #00ffa3; --down: #ff3b30; }
-        body { background: var(--bg); color: #fff; font-family: -apple-system, sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; justify-content: center; align-items: center; }
-        .card { background: var(--card); width: 85%; border-radius: 30px; padding: 30px; border: 1px solid #333; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        #price { font-size: 60px; font-weight: 800; color: var(--gold); margin: 10px 0; letter-spacing: -2px; }
-        .signal-badge { display: inline-block; padding: 12px 24px; border-radius: 100px; font-weight: bold; font-size: 20px; margin-top: 15px; }
-        .buy { background: var(--up); color: #000; box-shadow: 0 0 20px var(--up); }
-        .wait { background: #333; color: #888; }
-        .sell { background: var(--down); color: #fff; box-shadow: 0 0 20px var(--down); }
-        .info { margin-top: 25px; font-size: 12px; color: #555; }
+        body { background: #000; color: #FFD700; font-family: sans-serif; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100vh; margin: 0; }
+        #price { font-size: 70px; font-weight: bold; }
+        #signal { font-size: 24px; color: #fff; background: #333; display: inline-block; padding: 10px 20px; border-radius: 50px; margin-top: 20px; }
+        .info { color: #555; margin-top: 30px; font-size: 12px; }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div style="color: #888; font-size: 14px; letter-spacing: 2px;">XAU/USD REAL-TIME</div>
-        <div id="price">--.--</div>
-        <div id="signal" class="signal-badge wait">扫描行情中...</div>
-        <div class="info" id="status">正在通过全能接口对齐华尔街...</div>
-    </div>
+    <div style="color: #888;">黄金现货 (XAU/USD)</div>
+    <div id="price">加载中...</div>
+    <div id="signal">正在扫描...</div>
+    <div class="info">接口：币安极速通道 (每3秒刷新)</div>
 
     <script>
-        async function fetchGold() {
+        async function getPrice() {
             try {
-                // 使用你要求的更稳的 AllOrigins 备用接口
-                const res = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://query1.finance.yahoo.com/v7/finance/quote?symbols=GC=F'));
-                const raw = await res.json();
+                // 直接请求币安黄金对美元接口，不经过中转，速度最快
+                const r = await fetch('https://api.binance.com/api/3/ticker/24hr?symbol=PAXGUSDT');
+                const d = await r.json();
                 
-                // 解析 AllOrigins 返回的特殊格式
-                const data = JSON.parse(raw.contents);
-                const quote = data.quoteResponse.result[0];
-                
-                const p = quote.regularMarketPrice;
-                const pct = quote.regularMarketChangePercent;
+                const p = parseFloat(d.lastPrice);
+                const pct = parseFloat(d.priceChangePercent);
 
-                // 更新界面数字
                 document.getElementById('price').innerText = `$${p.toFixed(2)}`;
-                document.getElementById('status').innerText = "数据已同步 (5秒后下次扫描)";
                 
-                // 自动决策大脑
-                const signal = document.getElementById('signal');
-                if (pct < -0.3) { 
-                    signal.innerText = "🚀 强烈买入信号";
-                    signal.className = "signal-badge buy";
-                } else if (pct > 0.8) {
-                    signal.innerText = "⚠️ 风险警示/减仓";
-                    signal.className = "signal-badge sell";
+                const s = document.getElementById('signal');
+                if (pct < -0.2) {
+                    s.innerText = "🚀 强烈买入";
+                    s.style.background = "#00ffa3";
+                    s.style.color = "#000";
+                } else if (pct > 0.5) {
+                    s.innerText = "⚠️ 建议减仓";
+                    s.style.background = "#ff3b30";
                 } else {
-                    signal.innerText = "😴 观望待机";
-                    signal.className = "signal-badge wait";
+                    s.innerText = "😴 观望待机";
+                    s.style.background = "#333";
+                    s.style.color = "#fff";
                 }
-            } catch (e) { 
-                document.getElementById('status').innerText = "链路尝试重连中...";
-                console.log("Error:", e); 
+            } catch (e) {
+                document.getElementById('price').innerText = "重连中...";
             }
         }
-
-        // 每 5 秒自动运行一次
-        setInterval(fetchGold, 5000);
-        // 页面打开时立即运行一次
-        fetchGold();
+        setInterval(getPrice, 3000);
+        getPrice();
     </script>
 </body>
 </html>
