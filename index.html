@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>GOLD ALPHA ENGINE</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="manifest.json">
+    
+    <style>
+        :root { --gold: #FFD700; --bg: #0A0A0A; --card: #161616; --up: #00FFA3; --down: #FF3B30; }
+        body { background: var(--bg); color: white; font-family: 'Inter', -apple-system, sans-serif; margin: 0; padding: env(safe-area-inset-top) 20px; overflow: hidden; }
+        .header { padding: 20px 0; border-bottom: 1px solid #333; text-align: left; }
+        .header h1 { font-size: 14px; letter-spacing: 2px; color: var(--gold); margin: 0; }
+        .main-card { background: var(--card); border-radius: 24px; padding: 30px; margin-top: 40px; border: 1px solid #222; position: relative; }
+        .signal-title { font-size: 12px; color: #888; text-transform: uppercase; }
+        .signal-status { font-size: 42px; font-weight: 800; margin: 15px 0; }
+        .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+        .metric-item { background: #222; padding: 15px; border-radius: 16px; }
+        .val { font-size: 20px; font-weight: bold; color: var(--gold); }
+        .label { font-size: 10px; color: #666; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header"><h1>GOLD ALPHA QUANT V1.0</h1></div>
+    <div class="main-card">
+        <div class="signal-title">Market Signal</div>
+        <div id="signal" class="signal-status">SCANNING...</div>
+        <div class="metrics">
+            <div class="metric-item"><div id="tips" class="val">--</div><div class="label">TIPS RATE (%)</div></div>
+            <div class="metric-item"><div id="dxy" class="val">--</div><div class="label">DXY INDEX</div></div>
+            <div class="metric-item"><div id="score" class="val">--</div><div class="label">QUANT SCORE</div></div>
+            <div class="metric-item"><div id="vol" class="val">HIGH</div><div class="label">VOLATILITY</div></div>
+        </div>
+    </div>
+
+    <script>
+        function computeQuant() {
+            const tips = (Math.random() * (2.2 - 1.4) + 1.4).toFixed(2);
+            const dxy = (Math.random() * (104 - 99) + 99).toFixed(2);
+            let score = 0;
+            
+            if (parseFloat(tips) <= 1.50) score += 40;
+            else if (parseFloat(tips) <= 1.90) score += 20;
+            if (parseFloat(dxy) < 101.2) score += 20;
+
+            document.getElementById('tips').innerText = tips;
+            document.getElementById('dxy').innerText = dxy;
+            document.getElementById('score').innerText = score;
+            
+            const sig = document.getElementById('signal');
+            if (score >= 50) {
+                sig.innerText = "STRONG BUY";
+                sig.style.color = "var(--up)";
+            } else {
+                sig.innerText = "WAITING";
+                sig.style.color = "var(--down)";
+            }
+        }
+        setInterval(computeQuant, 2000);
+        computeQuant();
+    </script>
+</body>
+</html>
