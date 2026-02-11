@@ -3,47 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>黄金量化雷达-最终窗口版</title>
+    <title>黄金量化决策仪表盘</title>
     <style>
-        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .header { padding: 15px; text-align: center; background: #1a1a1a; border-bottom: 1px solid #333; }
-        #gold-widget { flex: 1; width: 100%; }
-        .footer { padding: 10px; font-size: 12px; color: #666; text-align: center; }
+        body { background: #000; color: #fff; font-family: sans-serif; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; }
+        .header { padding: 20px; text-align: center; background: #1a1a1a; }
+        #gold-radar { flex: 1; width: 100%; min-height: 450px; }
+        .footer { padding: 15px; font-size: 13px; color: #FFD700; text-align: center; background: #1a1a1a; border-top: 1px solid #333; }
     </style>
 </head>
 <body>
     <div class="header">
-        <span style="color: #FFD700; font-weight: bold; font-size: 18px;">GOLD ALPHA V10.0</span>
+        <div style="color: #888; font-size: 12px; margin-bottom: 5px;">黄金实时量化评分</div>
+        <div style="font-size: 20px; font-weight: bold; letter-spacing: 1px;">XAU/USD STRATEGY</div>
     </div>
 
-    <div id="gold-widget">
-        <div class="tradingview-widget-container" style="height:100%;width:100%">
-            <div id="tradingview_gold"></div>
-            <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-            <script type="text/javascript">
-            new TradingView.MediumWidget({
-              "symbols": [["Gold", "OANDA:XAUUSD|1D"]],
-              "chartOnly": false,
+    <div id="gold-radar">
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget"></div>
+            <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-technical-analysis.js" async>
+            {
+              "interval": "1h",
               "width": "100%",
-              "height": "100%",
-              "locale": "zh_CN",
-              "colorTheme": "dark",
-              "gridLineColor": "rgba(42, 46, 57, 0)",
-              "fontColor": "#787b86",
               "isTransparent": false,
-              "autosize": true,
-              "showFloatingTooltip": true,
-              "showVolume": false,
-              "scalePosition": "no",
-              "scaleMode": "Normal",
-              "fontFamily": "Trebuchet MS, sans-serif",
-              "noLogoOverlay": true
-            });
+              "height": "100%",
+              "symbol": "OANDA:XAUUSD",
+              "showIntervalTabs": true,
+              "displayMode": "single",
+              "locale": "zh_CN",
+              "colorTheme": "dark"
+            }
             </script>
         </div>
     </div>
     <div class="footer">
-        ● 卫星链路已直连 | 实时 K 线决策模式
+        📢 指针指向 <span style="text-decoration: underline;">强力买入</span> 时可考虑建仓
     </div>
 </body>
 </html>
