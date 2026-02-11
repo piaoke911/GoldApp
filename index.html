@@ -3,51 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>极速黄金终端</title>
+    <title>黄金量化-最终稳健版</title>
     <style>
-        body { background: #000; color: #FFD700; font-family: sans-serif; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100vh; margin: 0; }
-        #price { font-size: 70px; font-weight: bold; }
-        #signal { font-size: 24px; color: #fff; background: #333; display: inline-block; padding: 10px 20px; border-radius: 50px; margin-top: 20px; }
-        .info { color: #555; margin-top: 30px; font-size: 12px; }
+        body { background: #000; color: #FFD700; font-family: -apple-system, sans-serif; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100vh; margin: 0; }
+        #price { font-size: 60px; font-weight: bold; margin: 20px 0; }
+        #signal { font-size: 20px; color: #fff; background: #333; display: inline-block; padding: 12px 25px; border-radius: 50px; }
+        .info { color: #444; margin-top: 40px; font-size: 11px; }
     </style>
 </head>
 <body>
-    <div style="color: #888;">黄金现货 (XAU/USD)</div>
-    <div id="price">加载中...</div>
-    <div id="signal">正在扫描...</div>
-    <div class="info">接口：币安极速通道 (每3秒刷新)</div>
+    <div style="color: #888; letter-spacing: 2px;">GOLD QUANT V8.0</div>
+    <div id="price">加载数据...</div>
+    <div id="signal">正在对齐</div>
+    <div class="info">自动切换最快节点 | 每 5 秒刷新</div>
 
     <script>
-        async function getPrice() {
+        async function getGoldPrice() {
+            // 我们换用 Gate.io 的接口，这个接口在手机移动网络下非常稳
+            const api_url = 'https://data.gateapi.io/api2/1/ticker/paxg_usdt';
+            
             try {
-                // 直接请求币安黄金对美元接口，不经过中转，速度最快
-                const r = await fetch('https://api.binance.com/api/3/ticker/24hr?symbol=PAXGUSDT');
-                const d = await r.json();
+                const response = await fetch(api_url);
+                const data = await response.json();
                 
-                const p = parseFloat(d.lastPrice);
-                const pct = parseFloat(d.priceChangePercent);
+                // 获取价格
+                const p = parseFloat(data.last);
+                // 获取涨跌幅
+                const pct = parseFloat(data.percentChange);
 
                 document.getElementById('price').innerText = `$${p.toFixed(2)}`;
                 
                 const s = document.getElementById('signal');
-                if (pct < -0.2) {
-                    s.innerText = "🚀 强烈买入";
-                    s.style.background = "#00ffa3";
-                    s.style.color = "#000";
-                } else if (pct > 0.5) {
-                    s.innerText = "⚠️ 建议减仓";
-                    s.style.background = "#ff3b30";
+                if (pct < -0.5) {
+                    s.innerText = "🚀 信号：强烈建议建仓";
+                    s.style.background = "#00ffa3"; s.style.color = "#000";
+                } else if (pct > 1.0) {
+                    s.innerText = "⚠️ 信号：高位注意减仓";
+                    s.style.background = "#ff3b30"; s.style.color = "#fff";
                 } else {
-                    s.innerText = "😴 观望待机";
-                    s.style.background = "#333";
-                    s.style.color = "#fff";
+                    s.innerText = "😴 信号：波动平稳 观望";
+                    s.style.background = "#222"; s.style.color = "#888";
                 }
             } catch (e) {
-                document.getElementById('price').innerText = "重连中...";
+                document.getElementById('price').innerText = "链路切换中...";
             }
         }
-        setInterval(getPrice, 3000);
-        getPrice();
+
+        // 启动任务
+        setInterval(getGoldPrice, 5000);
+        getGoldPrice();
     </script>
 </body>
 </html>
