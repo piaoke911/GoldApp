@@ -1,32 +1,24 @@
-name: Global-Top-Quant-Build
-on:
-  push:
-    branches: [ main, master ]
-  workflow_dispatch:  # 允许你手动点击按钮触发
+name: Gold-Quant-Legacy-Build
+on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # 核心修改：强制使用 22.04 老版本，绕过所有 PIP 权限锁
+    runs-on: ubuntu-22.04
+    
     steps:
-      - name: 🚀 1. 首席执行：同步源码
+      - name: 🚀 1. 源码同步
         uses: actions/checkout@v4
 
-      - name: 🧹 2. 空间清理 (防止爆盘)
+      - name: 🏗️ 2. 环境清理与构建 (老兵模式)
         run: |
+          # 释放磁盘空间
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /opt/ghc
-          sudo rm -rf "/usr/local/share/boost"
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
-
-      - name: 🏗️ 3. 环境地基 (全手动依赖安装)
-        # 这里安装了所有编译安卓底层需要的库，避开一切环境缺失错误
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            build-essential \
-            libssl-dev \
-            libffi-dev \
-            python3-dev \
+          
+          # 安装基础依赖
+          sudo apt update
+          sudo apt install -y \
             python3-pip \
             python3-setuptools \
             git \
@@ -35,31 +27,32 @@ jobs:
             openjdk-17-jdk \
             autoconf \
             libtool \
-            pkg-config \
-            zlib1g-dev \
-            libncurses5-dev \
-            libncursesw5-dev \
-            libtinfo5 \
-            cmake \
-            libltdl-dev
+            libffi-dev \
+            libssl-dev \
+            virtualenv
 
-      - name: 🛠️ 4. 核心工具装载
-        # 安装最新版 Buildozer 和 Cython
+      - name: 🛠️ 3. 安装 Buildozer (无视警告版)
         run: |
           pip3 install --upgrade pip
-          pip3 install --user --upgrade buildozer Cython==0.29.36 virtualenv
+          # 这里指定 Cython 旧版本，防止新版本不兼容
+          pip3 install --user --upgrade buildozer Cython==0.29.36
 
-      - name: 🧠 5. 启动全球量化编译 (Debug版)
-        # 关键参数：yes | ... 自动同意所有协议，防止卡死
+      - name: 🧠 4. 启动黄金编译
         run: |
+          # 注入环境变量
           export PATH=$PATH:~/.local/bin
+          
+          # 强制同意协议并开始编译
           yes | buildozer android debug
         env:
           APP_ANDROID_ACCEPT_SDK_LICENSE: "1"
           BUILDOZER_USE_SUDO: "0"
 
-      - name: 📦 6. 成果提取
+      - name: 📦 5. 成果提取
+        if: always() # 无论成功失败都尝试提取日志
         uses: actions/upload-artifact@v4
         with:
-          name: Gold-Quant-Final-APK
-          path: bin/*.apk
+          name: GoldApp-Result
+          path: |
+            bin/*.apk
+            .buildozer/android/platform/build-arm64-v8a/dists/goldquant/*.log
