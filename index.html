@@ -3,69 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GOLD ALPHA V7.0 - 实时决策版</title>
+    <title>黄金量化终端 V7.5</title>
     <style>
-        :root { --gold: #FFD700; --bg: #000; --card: #121212; --up: #00FFA3; --down: #FF3B30; }
-        body { background: var(--bg); color: white; font-family: -apple-system, sans-serif; margin: 0; padding: 15px; }
-        .main-card { background: var(--card); border-radius: 20px; padding: 20px; border: 1px solid #222; text-align: center; margin-bottom: 15px; }
-        #price { font-size: 50px; font-weight: 800; color: var(--gold); margin: 5px 0; }
-        .score-box { font-size: 24px; font-weight: bold; padding: 10px; border-radius: 10px; margin: 10px 0; }
-        .buy { background: rgba(0, 255, 163, 0.2); color: var(--up); }
-        .wait { background: rgba(255, 255, 255, 0.1); color: #aaa; }
-        .status-bar { font-size: 12px; color: #666; display: flex; justify-content: space-between; padding: 0 10px; }
+        :root { --gold: #FFD700; --bg: #0d0d0d; --card: #1a1a1a; --up: #00ffa3; --down: #ff3b30; }
+        body { background: var(--bg); color: #fff; font-family: -apple-system, sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; justify-content: center; align-items: center; }
+        .card { background: var(--card); width: 85%; border-radius: 30px; padding: 30px; border: 1px solid #333; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        #price { font-size: 64px; font-weight: 800; color: var(--gold); margin: 10px 0; letter-spacing: -2px; }
+        .signal-badge { display: inline-block; padding: 12px 24px; border-radius: 100px; font-weight: bold; font-size: 20px; margin-top: 15px; }
+        .buy { background: var(--up); color: #000; box-shadow: 0 0 20px var(--up); }
+        .wait { background: #333; color: #888; }
+        .sell { background: var(--down); color: #fff; box-shadow: 0 0 20px var(--down); }
+        .info { margin-top: 25px; font-size: 12px; color: #555; }
     </style>
 </head>
 <body>
-    <div class="status-bar">
-        <span id="net-status">● 正在对齐数据...</span>
-        <span id="time">--:--:--</span>
-    </div>
-
-    <div class="main-card">
-        <div style="font-size: 14px; color: #888;">黄金现货 (XAU/USD)</div>
-        <div id="price">加载中</div>
-        <div id="signal" class="score-box wait">正在扫描因子...</div>
-    </div>
-
-    <div style="font-size: 13px; color: #555; line-height: 1.6;">
-        <b>实时逻辑：</b><br>
-        1. 自动抓取 Yahoo Finance 原始数据。<br>
-        2. 手机本地计算多空评分，不经过 Actions。<br>
-        3. 建议配合手机浏览器的“添加到主屏幕”使用。
+    <div class="card">
+        <div style="color: #888; font-size: 14px; letter-spacing: 2px;">XAU/USD REAL-TIME</div>
+        <div id="price">--.--</div>
+        <div id="signal" class="signal-badge wait">扫描行情中...</div>
+        <div class="info">每 5 秒自动对齐华尔街数据<br>决策大脑已就绪</div>
     </div>
 
     <script>
-        async function update() {
+        async function fetchGold() {
             try {
-                // 使用最稳的代理直接取数
-                const r = await fetch('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent('https://query1.finance.yahoo.com/v7/finance/quote?symbols=GC=F'));
-                const d = await r.json();
-                const p = d.quoteResponse.result[0].regularMarketPrice;
-                const change = d.quoteResponse.result[0].regularMarketChangePercent;
+                const res = await fetch('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent('https://query1.finance.yahoo.com/v7/finance/quote?symbols=GC=F'));
+                const data = await res.json();
+                const quote = data.quoteResponse.result[0];
+                const p = quote.regularMarketPrice;
+                const pct = quote.regularMarketChangePercent;
 
                 document.getElementById('price').innerText = `$${p.toFixed(2)}`;
-                document.getElementById('time').innerText = new Date().toLocaleTimeString();
                 
-                // 极简策略逻辑（直接写在前端）
-                const signalBox = document.getElementById('signal');
-                if (change > 0.5) {
-                    signalBox.innerText = "🚀 强烈买入信号";
-                    signalBox.className = "score-box buy";
-                } else if (change < -0.5) {
-                    signalBox.innerText = "⚠️ 风险警示";
-                    signalBox.style.color = "#FF3B30";
+                const signal = document.getElementById('signal');
+                // 这里就是你的买卖决策逻辑
+                if (pct < -0.3) { 
+                    signal.innerText = "🚀 强烈买入信号";
+                    signal.className = "signal-badge buy";
+                } else if (pct > 0.8) {
+                    signal.innerText = "⚠️ 风险警示/减仓";
+                    signal.className = "signal-badge sell";
                 } else {
-                    signalBox.innerText = "😴 观望待机";
-                    signalBox.className = "score-box wait";
+                    signal.innerText = "😴 观望待机";
+                    signal.className = "signal-badge wait";
                 }
-                document.getElementById('net-status').innerText = "● 实时对齐中";
-            } catch (e) {
-                document.getElementById('net-status').innerText = "● 链路切换中...";
-            }
+            } catch (e) { console.log("数据链路重连中..."); }
         }
-        setInterval(update, 5000);
-        update();
+        setInterval(fetchGold, 5000);
+        fetchGold();
     </script>
 </body>
 </html>
- 
